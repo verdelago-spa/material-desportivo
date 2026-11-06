@@ -972,8 +972,8 @@ let unsubs=[];
 /* ===== Postos com PIN: cada posto é uma conta do Firebase (e-mail interno + PIN de 6 dígitos como palavra-passe) ===== */
 const POSTOS=[
   {id:"rececao-spa",nome:"Receção Spa",email:"spa@posto.verdelago.com"},
-  {id:"rececao-hotel",nome:"Receção Hotel",email:"hotel@posto.verdelago.com"},
-  {id:"sports",nome:"Sports",email:"sports@posto.verdelago.com"}
+  {id:"rececao-hotel",nome:"Receção Hotel",email:"sports@posto.verdelago.com"}, /* contas trocadas na criação: o PIN da Receção Hotel ficou na conta sports@ */
+  {id:"sports",nome:"Sports",email:"hotel@posto.verdelago.com"}
 ];
 let pin="",postoSel=lsGet("posto")||"";
 function drawPin(){$("#lgDots").innerHTML=[0,1,2,3,4,5].map(i=>`<i class="${i<pin.length?"on":""}"></i>`).join("")}
