@@ -971,8 +971,8 @@ const FIREBASE_CONFIG={
 let unsubs=[];
 /* ===== Postos com PIN: cada posto é uma conta do Firebase (e-mail interno + PIN de 6 dígitos como palavra-passe) ===== */
 const POSTOS=[
-  {id:"rececao-spa",nome:"Receção Spa",email:"spa@posto.verdelago.com"},
-  {id:"rececao-hotel",nome:"Receção Hotel",email:"sports@posto.verdelago.com"}, /* contas trocadas na criação: o PIN da Receção Hotel ficou na conta sports@ */
+  {id:"rececao-spa",nome:"Spa",email:"spa@posto.verdelago.com"},
+  {id:"rececao-hotel",nome:"Frontdesk",email:"sports@posto.verdelago.com",ocultar:["analise","relatorio"]}, /* contas trocadas na criação: o PIN da Receção Hotel ficou na conta sports@ */
   {id:"sports",nome:"Sports",email:"hotel@posto.verdelago.com"}
 ];
 let pin="",postoSel=lsGet("posto")||"";
@@ -1004,7 +1004,8 @@ function showLogin(on){$("#login").hidden=!on;if(on){pin="";drawPin();$("#pinErr
     showLogin(false);showBanner("");
     try{const r=await fdb.doc("utilizadores/"+u.uid).get();const d=r.exists?r.data():{};S.admin=d.papel==="admin";S.userName=d.nome||(POSTOS.find(p=>p.email===u.email)||{}).nome||u.email}catch(e){S.admin=false;S.userName=(POSTOS.find(p=>p.email===u.email)||{}).nome||u.email}
     $("#who").hidden=false;$("#whoT").textContent=S.userName+(S.admin?" · gestor":"");
-    document.querySelector('[data-tab="defs"]').hidden=!S.admin;if(!S.admin&&S.tab==="defs")setTab("balcao");
+    {const po=POSTOS.find(p=>p.email===u.email);const hide=new Set([...(S.admin?[]:["defs"]),...((!S.admin&&po&&po.ocultar)||[])]);
+     document.querySelectorAll("#tabs [data-tab]").forEach(b=>b.hidden=hide.has(b.dataset.tab));if(hide.has(S.tab))setTab("balcao")}
     $("#dImpBtn").hidden=!S.admin;
     S.importAll=S.admin?async j=>{const w=[];Object.entries(j.emprestimos||{}).forEach(([id,d])=>w.push(["emprestimos/"+id,d]));if(j.config&&j.config.main)w.push(["config/main",j.config.main]);if(j.config&&j.config.avarias)w.push(["config/avarias",j.config.avarias]);
       for(let i=0;i<w.length;i+=400){const b=fdb.batch();w.slice(i,i+400).forEach(([p,d])=>b.set(fdb.doc(p),d));await b.commit()}return Object.keys(j.emprestimos||{}).length}:null;
